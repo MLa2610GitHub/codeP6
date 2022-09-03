@@ -1,28 +1,27 @@
 const Sauce = require("../models/sauce");
 
+//Importation du package fs (file system) de Node
+const fs = require("fs");
+
 exports.createSauce = (req, res, next) => {
+  const sauceObject = JSON.parse(req.body.thing);
+  delete sauceObject._id;
+  delete sauceObject._userId;
   const sauce = new Sauce({
-    userId: req.body.userId,
-    name: req.body.name,
-    manufacturer: req.body.manufacturer,
-    description: req.body.description,
-    mainPepper: req.body.mainPepper,
-    imageUrl: req.body.imageUrl,
-    heat: req.body.heat,
-    likes: req.body.likes,
-    dislikes: req.body.dislikes,
+    ...sauceObject,
+    userId: req.auth.userId,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`,
   });
+
   sauce
     .save()
     .then(() => {
-      res.status(201).json({
-        message: "Sauce saved successfully!",
-      });
+      res.status(201).json({ message: "Sauce enregistrée !" });
     })
     .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
+      res.status(400).json({ error });
     });
 };
 
@@ -41,44 +40,45 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  const sauce = new Sauce({
-    userId: req.body.userId,
-    name: req.body.name,
-    manufacturer: req.body.manufacturer,
-    description: req.body.description,
-    mainPepper: req.body.mainPepper,
-    imageUrl: req.body.imageUrl,
-    heat: req.body.heat,
-    likes: req.body.likes,
-    dislikes: req.body.dislikes,
-  });
+   const sauceObject = req.file ? {
+       ...JSON.parse(req.body.sauce),
+       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+   } : { ...req.body }; //Si pas d'objet transmis, récupérer corps de la requête
+ 
+   delete sauceObject._userId; //Mesure de sécurité
 
-
-  Sauce.updateOne({ _id: req.params.id }, sauce)
-    .then(() => {
-      res.status(201).json({
-        message: "Sauce updated successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+   Sauce.findOne({_id: req.params.id}) //Récupération objet dans DB
+       .then((sauce) => {
+           if (sauce.userId != req.auth.userId) {
+               res.status(401).json({ message : 'Not authorized'});
+           } else { //Si c'est le bon utilisateur
+               Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
+               .then(() => res.status(200).json({message : 'Sauce modifiée!'}))
+               .catch(error => res.status(401).json({ error }));
+           }
+       })
+       .catch((error) => {
+           res.status(400).json({ error });
+       });
 };
 
 exports.deleteSauce = (req, res, next) => {
-  Sauce.deleteOne({ _id: req.params.id })
-    .then(() => {
-      res.status(200).json({
-        message: "Deleted!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+    Sauce.findOne({ _id: req.params.id}) //On vérifie que l'utilisateur a les droits nécessaires
+       .then(sauce => {
+           if (sauce.userId != req.auth.userId) {
+               res.status(401).json({message: 'Not authorized'});
+           } else { //Récupération du nom de fichier
+               const filename = thing.imageUrl.split('/images/')[1];
+               fs.unlink(`images/${filename}`, () => { //Supression de la DB
+                   Sauce.deleteOne({_id: req.params.id})
+                       .then(() => { res.status(200).json({message: 'Sauce supprimée !'})})
+                       .catch(error => res.status(401).json({ error }));
+               });
+           }
+       })
+       .catch( error => {
+           res.status(500).json({ error });
+       });
 };
 
 exports.getAllSauces = (req, res, next) => {

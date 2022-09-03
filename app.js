@@ -1,7 +1,14 @@
-const express = require('express'); //Importation d'Express
-const mongoose = require('mongoose'); //Importation de mongoose
-const userRoutes = require('./routes/user'); //Importation des routes
-const sauceRoutes = require('./routes/user/sauce'); //Importation des routes
+const express = require('express'); 
+//Importation d'Express
+const mongoose = require('mongoose'); 
+//Importation de mongoose
+const userRoutes = require('./routes/user'); 
+//Importation des routes
+const sauceRoutes = require('./routes/sauce'); 
+//Importation des routes
+
+const path = require("path");
+//pour accéder au path de notre serveur 
 
 const app = express();
 
@@ -21,12 +28,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use('/api/sauce', sauceRoutes);
 app.use('/api/auth', userRoutes);
 
-mongoose
-  .connect(
-    "mongodb+srv://XXXX/?retryWrites=true&w=majority",
+mongoose.connect(
+    "mongodb+srv:XXXX",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
