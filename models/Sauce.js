@@ -10,9 +10,9 @@ const sauceSchema = mongoose.Schema({
   mainPepper: { type: String, required: true },
   imageUrl: { type: String, required: true },
   heat: { type: Number, required: true },
-  likes: { type: Number, required: true },
-  dislikes: { type: Number, required: true },
- 
+  likes: { type: Number, default: 0, required: false },
+  dislikes: { type: Number, default: 0, required: false },
+  
 });
 
 //Exportation du schéma 'Sauce' pour qu'il soit disponible dans l'application Express

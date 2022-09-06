@@ -7,7 +7,7 @@ const router = express.Router();
 //Importation middleware d'authentification 
 const auth = require('../middleware/auth')
 
-//Importation de multer
+//Importation du middleware multer pour gérer les images
 const multer = require("../middleware/multer-config");
 
 const sauceCtrl = require("../controllers/sauce");

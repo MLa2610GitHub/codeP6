@@ -1,16 +1,28 @@
-const express = require('express'); 
+const dotenv = require('dotenv').config('./.env');
+console.log(dotenv);
+
 //Importation d'Express
-const mongoose = require('mongoose'); 
+const express = require('express'); 
+
 //Importation de mongoose
+const mongoose = require('mongoose'); 
+
+//Importation de Morgan (pour logger les requêtes HTTP)
+const morgan = require("morgan");
+
+
+//Importation des routes
 const userRoutes = require('./routes/user'); 
-//Importation des routes
 const sauceRoutes = require('./routes/sauce'); 
-//Importation des routes
 
+//pour accéder au path du serveur 
 const path = require("path");
-//pour accéder au path de notre serveur 
 
+//Création d'une application Express
 const app = express();
+
+//Logger les requêtes et les réponses
+app.use(morgan("morgan")); 
 
 // Prévention des erreurs de CORS (Cross Origin Resource Sharing)
 // Ajout de headers HTTP à l'objet response pour pouvoir accéder à l'API depuis n'importe quelle origine 
@@ -28,12 +40,17 @@ app.use((req, res, next) => {
   next();
 });
 
+//Gestion des images
 app.use("/images", express.static(path.join(__dirname, "images")));
+
+//Routes
 app.use('/api/sauce', sauceRoutes);
 app.use('/api/auth', userRoutes);
 
+
+//Connection à la base de données MongoDB
 mongoose.connect(
-    "mongodb+srv:XXXX",
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.7xqimu5.mongodb.net/?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))

@@ -24,6 +24,8 @@ exports.signup = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
+
+
 //On vérifie si un utilisateur qui essaie de se connecter a bien des identifiants valides
 //Si l'e-mail entré par l'utilisateur n'existe pas dans la base de données, une erreur401 Unauthorized est renvoyée.
 //La fonction 'compare' de bcrypt compare le login de l'utilisateur avec le hash enregistré dans la base de données
