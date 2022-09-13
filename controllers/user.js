@@ -11,14 +11,17 @@ const User = require('../models/User');
 //On appelle la fonction de hachage de bcrypt dans le mot de passe
 //On lui demande de "saler"le mot de passe 10 fois
 exports.signup = (req, res, next) => {
+  console.log("/////////////////CONTROLLER USER /////////////////////////");
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
         email: req.body.email,
         password: hash
       });
+     
+//Envoi du nouvel utilisateur dans la base de données      
       user.save()
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+        .then(() => res.status(201).json({ message: 'La requête a réussi et un utilisateur a été créé !' }))
         .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error }));

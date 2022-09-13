@@ -10,19 +10,8 @@ const mongoose = require('mongoose');
 //Importation de Morgan (pour logger les requêtes HTTP)
 const morgan = require("morgan");
 
-
-//Importation des routes
-const userRoutes = require('./routes/user'); 
-const sauceRoutes = require('./routes/sauce'); 
-
-//pour accéder au path du serveur 
-const path = require("path");
-
 //Création d'une application Express
 const app = express();
-
-//Logger les requêtes et les réponses
-app.use(morgan("morgan")); 
 
 // Prévention des erreurs de CORS (Cross Origin Resource Sharing)
 // Ajout de headers HTTP à l'objet response pour pouvoir accéder à l'API depuis n'importe quelle origine 
@@ -40,13 +29,24 @@ app.use((req, res, next) => {
   next();
 });
 
-//Gestion des images
-app.use("/images", express.static(path.join(__dirname, "images")));
+
+//Importation des routes
+const userRoutes = require('./routes/user'); 
+const sauceRoutes = require('./routes/sauce'); 
 
 //Routes
 app.use('/api/sauce', sauceRoutes);
 app.use('/api/auth', userRoutes);
 
+//pour accéder au path du serveur 
+const path = require("path");
+
+//Logger les requêtes et les réponses
+app.use(morgan("morgan")); 
+
+
+//Gestion des images
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 //Connection à la base de données MongoDB
 mongoose.connect(
@@ -60,7 +60,8 @@ mongoose.connect(
 
 
 app.use((req, res, next) => {
-  console.log("message envoye");
+  console.log("//// LE TEXTE COMMENCE ICI")
+  console.log("///////////////////////////");
   next();
 });
 
@@ -69,14 +70,5 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-    res.json({messsage: 'Votre message est arrive'});
-
-});
-
-app.use((req, res, next) => {
-  console.log('reponse ok');
- 
-});
 
 module.exports = app;
