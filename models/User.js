@@ -17,6 +17,9 @@ userSchema.plugin(uniqueValidator);
 //Le model sert à créer des documents se basant sur le schema
 /*L'objet 'User' retourné par mongoose.model est une fonction qui est utilisée ici en tant que classe JavaScript. D'où le nom de variable commençant par une majuscule 
 */
-module.exports = mongoose.model('User', userSchema);
-//Ce model Mongoose est aussi importé dans le fichier app.js
+
+//Exportation du schéma 'User' pour qu'il soit disponible dans l'application Express
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
 

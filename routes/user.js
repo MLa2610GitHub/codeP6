@@ -1,5 +1,5 @@
 //Importation d'Express
-const express = require('express');
+const express = require("express");
 
 //Création d'un routeur express
 const router = express.Router();
@@ -7,12 +7,23 @@ const router = express.Router();
 //Importation du middleware d'authentification
 const auth = require('../middleware/auth');
 
-const userCtrl = require('../controllers/user');
+const userController = require('../controllers/user');
 
-//Création des routes
+//Création des routes user et de leurs middlewares respectifs
 
-router.post('/signup, userCtrl.signup');
-router.post('/login, userCtrl.login');
+router.post("/signUp", userController.signUp);
+router.post("/login", userController.login);
+
 
 //Exportation du routeur pour qu'il soit disponible dans toute l'application
 module.exports = router;
+
+/*
+
+//Création de la route user
+router.post("/", (req, res, next) => {
+  const user = new User({});
+});
+
+
+*/
