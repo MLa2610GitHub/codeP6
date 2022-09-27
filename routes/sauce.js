@@ -14,9 +14,15 @@ const sauceController = require("../controllers/sauce");
 
 //Création des routes de l'app
 
+//Route GET pour afficher toutes les sauces qui se trouvent dans la base de données
+router.get("/", auth, sauceController.getAllSauces);
+
 //Route POST pour publier une sauce
 router.post("/", auth, multer, sauceController.createSauce);
 
+
+//Route GET pour afficher une seule sauce
+router.get("/:id", auth, sauceController.getOneSauce);
 
 //Route PUT pour modifier une sauce
 router.put("/:id", auth, multer, sauceController.modifySauce);
@@ -24,11 +30,8 @@ router.put("/:id", auth, multer, sauceController.modifySauce);
 //Route DELETE pour supprimer une sauce
 router.delete("/:id", auth, sauceController.deleteSauce);
 
-//Route GET pour afficher toutes les sauces qui se trouvent dans la base de données
-router.get("/", auth, sauceController.getAllSauces);
-
-//Route GET pour afficher une seule sauce
-router.get("/:id", auth, sauceController.getOneSauce);
+//Route POST pour liker une sauce
+router.post("/:id/like", auth, sauceController.likeSauce);
 
 
 

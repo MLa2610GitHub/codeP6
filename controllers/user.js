@@ -22,7 +22,8 @@ exports.signUp = (req, res, next) => {
      
 //Envoi du nouvel utilisateur dans la base de données      
       user.save()
-        .then(() => res.status(201).json({ message: 'La requête a réussi et un utilisateur a été créé dans la bdd !' }))
+        .then(() => res.status(201).json({ message: 'La requête a réussi et un utilisateur a été créé dans la bdd !' })) 
+        //message affiché dans Postman quand un user est créé avec cet outil - et ce user se retrouve dans MongoDB
         .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error }));
@@ -42,13 +43,13 @@ exports.signUp = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
-    .then((user) => {
+    .then(user => {
       if (!user) {
         return res.status(401).json({ error: "Paire login/mot de passe incorrecte !" });
       }
       bcrypt
         .compare(req.body.password, user.password)
-        .then((valid) => {
+        .then(valid => {
           if (!valid) {
             return res.status(401).json({ error: "Paire login/mot de passe incorrecte" });
           }
@@ -58,14 +59,14 @@ exports.login = (req, res, next) => {
               { userId: user._id },
               "RANDOM_TOKEN_SECRET",
               {
-                expiresIn: "24h",
+                expiresIn: "24h"
               }
-            ),
+            )
           });
         })
-        .catch((error) => res.status(500).json({ error }));
+        .catch(error => res.status(500).json({ error }));
     })
-    .catch((error) => res.status(500).json({ error }));
-    console.log('Token non valide')
+    .catch(error => res.status(500).json({ error }));
+    
 };
 
