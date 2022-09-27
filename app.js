@@ -21,9 +21,6 @@ const morgan = require("morgan");
 //Création d'une application Express
 const app = express();
 
-//Middleware qui donne accès au corps des requêtes
-app.use(express.json());
-
 // Prévention des erreurs de CORS (Cross Origin Resource Sharing)
 // Ajout de headers HTTP à l'objet response pour pouvoir accéder à l'API depuis n'importe quelle origine
 // Cela permet aussi d'envoyer des requêtes avec les méthodes POST, PUT, DELETE, PATCH, OPTIONS
@@ -40,17 +37,19 @@ app.use((req, res, next) => {
   next();
 });
 
+//Middleware qui donne accès au corps des requêtes
+app.use(express.json());
+
 //middleware qui gère les fichiers du dossier images
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-//middlewares qui transmettent les requêtes aux routes sauce et user 
-app.use("/api/sauces", sauceRoutes);
-app.use("/api/auth", userRoutes);
+//middlewares qui transmettent les requêtes aux routes user et sauce
 
+app.use("/api/auth", userRoutes);
+app.use("/api/sauces", sauceRoutes);
 
 //Logger les requêtes et les réponses
 app.use(morgan("morgan"));
-
 
 //Connection à la base de données MongoDB
 mongoose
@@ -61,6 +60,4 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch((err) => console.log("Connexion à MongoDB échouée !", err));
 
-
 module.exports = app;
-
