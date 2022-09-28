@@ -18,12 +18,3 @@ router.post("/login", userController.login);
 //Exportation du routeur pour qu'il soit disponible dans toute l'application
 module.exports = router;
 
-/*
-
-//Création de la route user
-router.post("/", (req, res, next) => {
-  const user = new User({});
-});
-
-
-*/

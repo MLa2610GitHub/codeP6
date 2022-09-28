@@ -20,8 +20,8 @@ exports.createSauce = (req, res, next) => {
   //Enregistrement de la sauce dans la bdd
   sauce.save()
     .then(() => 
-      {res.status(201).json({ message: "Sauce enregistrée !" })}) 
-       .catch(error => { res.status(400).json({ error })});
+      {res.status(201).json({ message: "Sauce enregistrée !" })}) //affichage dans l'ongle Réseau de Chrome
+       .catch(error => { res.status(400).json({ error: "Bad request : syntaxe invalide" });});
    
    
   };
@@ -30,7 +30,7 @@ exports.createSauce = (req, res, next) => {
 exports.getOneSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce =>  res.status(200).json(sauce))
-    .catch(error => res.status(404).json({error }));
+    .catch(error => res.status(404).json({error: "donnée introuvable" }));
 };
 
 //MODIFIER UNE SAUCE 
@@ -47,14 +47,19 @@ exports.modifySauce = (req, res, next) => {
            if (sauce.userId != req.auth.userId) {
                res.status(401).json({ message : 'Not authorized'});
            } else { //Si c'est le bon utilisateur
-               Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
-               .then(() => res.status(200).json({message : 'Sauce modifiée!'}))
-               .catch(error => res.status(401).json({ error }));
+               Sauce.updateOne(
+                 { _id: req.params.id },
+                 { ...sauceObject, _id: req.params.id }
+               )
+                 .then(() =>
+                   res.status(200).json({ message: "Sauce modifiée!" })) 
+                 //affichage dans Postman et dans l'onglet Réseau de Chrome
+                 .catch((error) => res.status(401).json({ error: "Unauthorized" }));
            }
        })
        .catch((error) => {
-           res.status(400).json({ error });
-       });
+           res.status(400).json({ error: "Bad request : syntaxe invalide" });
+                  });
 };
 
  //SUPPRIMER UNE SAUCE 
@@ -66,14 +71,18 @@ exports.deleteSauce = (req, res, next) => {
            } else { //Récupération du nom de fichier
                const filename = sauce.imageUrl.split('/images/')[1];
                fs.unlink(`images/${filename}`, () => { //Supression du fichier de la bdd
-                   Sauce.deleteOne({_id: req.params.id})
-                       .then(() => { res.status(200).json({message: 'Sauce supprimée !'})})
-                       .catch(error => res.status(401).json({ error }));
+                   Sauce.deleteOne({ _id: req.params.id })
+                     .then(() => {
+                       res.status(200).json({ message: "Sauce supprimée !" });
+                     })
+                     .catch((error) =>
+                       res.status(401).json({ error: "Not authorized" })
+                     );
                });
            }
        })
        .catch( error => {
-           res.status(500).json({ error });
+           res.status(500).json({ error: 'Internal Server Error : le serveur ne sait pas traiter cette situation' });
        });
 };
 
@@ -85,7 +94,8 @@ exports.getAllSauces = (req, res, next) => {
     })
     .catch((error) => {
       res.status(400).json({
-        error });
+        error: "Bad request : syntaxe invalide",
+      });
     });
 };
 
@@ -98,11 +108,12 @@ exports.getAllSauces = (req, res, next) => {
     case 1:
  Sauce.updateOne(
    { _id: req.params.id },
-   { $inc: { likes: +1 }, 
-     $push: { usersLiked: req.body.userId }, 
-    })
+   { $inc: { likes: +1 }, $push: { usersLiked: req.body.userId } }
+ )
    .then(() => res.status(201).json({ message: "Like enregistré" }))
-   .catch((error) => res.status(400).json({ error }));
+   .catch((error) =>
+     res.status(400).json({ error: "Bad request : syntaxe invalide" })
+   );
   break;
 
  //Si l'utilisateur annule un like ou un dislike
@@ -116,7 +127,7 @@ exports.getAllSauces = (req, res, next) => {
        { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId } }
      )
        .then(() => res.status(201).json({ message: "Like annulé" }))
-       .catch((error) => res.status(400).json({ error }));
+       .catch((error) => res.status(400).json({ error: 'Bad request : syntaxe invalide' }));
    }
 
    //Annulation d'un dislike
@@ -126,23 +137,26 @@ exports.getAllSauces = (req, res, next) => {
        { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId } }
      )
        .then(() => res.status(201).json({ message: "Dislike annulé" }))
-       .catch((error) => res.status(400).json({ error }));
+       .catch((error) =>
+         res.status(400).json({ error: "Bad request : syntaxe invalide" })
+       );
    }
  })
 
- .catch(error => res.status(404).json({error}));
+ .catch(error => res.status(404).json({ error: 'Donnée introuvable'}));
   break;
 
  //Si l'utilisateur dislike la sauce
   
     case -1:
  Sauce.updateOne(
-  {_id: req.params.id},
-  {$inc:{dislikes:+1}, 
-  $push: {usersDisliked: req.body.userId},
-})
-    .then(() => res.status(201).json({message: "Dislike enregistré"}))
-    .catch(error => res.status(400).json({error}));
+   { _id: req.params.id },
+   { $inc: { dislikes: +1 }, $push: { usersDisliked: req.body.userId } }
+ )
+   .then(() => res.status(201).json({ message: "Dislike enregistré" }))
+   .catch((error) =>
+     res.status(400).json({ error: "Bad request : syntaxe invalide" })
+   );
 
  break;
  default: console.log(err);

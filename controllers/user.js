@@ -13,20 +13,38 @@ const User = require('../models/User');
 //On lui demande de "saler"le mot de passe 10 fois
 exports.signUp = (req, res, next) => {
   console.log("////ENVOI REQ CONTROLLER USER ////////////");
-  bcrypt.hash(req.body.password, 10)
-    .then(hash => {
+  bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => {
       const user = new User({
         email: req.body.email,
-        password: hash
+        password: hash,
       });
-     
-//Envoi du nouvel utilisateur dans la base de données      
-      user.save()
-        .then(() => res.status(201).json({ message: 'La requête a réussi et un utilisateur a été créé dans la bdd !' })) 
+
+      //Envoi du nouvel utilisateur dans la base de données
+      user
+        .save()
+        .then(() =>
+          res.status(201).json({
+            message:
+              "La requête a réussi et un utilisateur a été créé dans la bdd !",
+          })
+        )
         //message affiché dans Postman quand un user est créé avec cet outil - et ce user se retrouve dans MongoDB
-        .catch(error => res.status(400).json({ error }));
+        //Dans le cas contraire
+        .catch((error) =>
+          res
+            .status(400)
+            .json({ error: "unauthorized : authentification non valide" })
+        );
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch((error) =>
+      res
+        .status(500)
+        .json({
+          error:
+            "Internal Server Error : le serveur ne sait pas traiter cette situation" })
+    );
 };
 
 
@@ -43,30 +61,41 @@ exports.signUp = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
-    .then(user => {
+    .then((user) => {
       if (!user) {
-        return res.status(401).json({ error: "Paire login/mot de passe incorrecte !" });
+        return res
+          .status(401)
+          .json({ error: "Paire login/mot de passe incorrecte !" });
       }
       bcrypt
         .compare(req.body.password, user.password)
-        .then(valid => {
+        .then((valid) => {
           if (!valid) {
-            return res.status(401).json({ error: "Paire login/mot de passe incorrecte" });
+            return res
+              .status(401)
+              .json({ error: "Paire login/mot de passe incorrecte" });
           }
           res.status(200).json({
             userId: user._id,
-            token: jwt.sign(
-              { userId: user._id },
-              "RANDOM_TOKEN_SECRET",
-              {
-                expiresIn: "24h"
-              }
-            )
+            token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+              expiresIn: "24h",
+            }),
           });
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch((error) =>
+          res.status(500).json({
+            error:
+              "Internal Server Error : le serveur ne sait pas traiter cette situation",
+          })
+        );
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch((error) =>
+      res
+        .status(500)
+        .json({
+          error:
+            "Internal Server Error : le serveur ne sait pas traiter cette situation"})
+    );
     
 };
 
