@@ -1,13 +1,12 @@
-
+//Importation du package jsonwebtoken qui permet de créer des tokens d'authentification et de vérifier leur validité
 const jwt = require("jsonwebtoken");
 
 //On vérifie si l'utilisateur est identifié dans la bdd
 module.exports = (req, res, next) => {
-// Comme des problèmes peuvent se produire,tout est inséré dans un bloc try...catch
+  // Comme des problèmes peuvent se produire,tout est inséré dans un bloc try...catch
 
   try {
-
-  // On extrait le token du header Authorization de la requête entrante  
+    // On extrait le token du header Authorization de la requête entrante
     const token = req.headers.authorization.split(" ")[1];
 
     // Utilisation de la fonction verify pour décoder le token
@@ -19,10 +18,7 @@ module.exports = (req, res, next) => {
       userId: userId,
     };
     next();
-      
   } catch (error) {
-    res.status(401).json({ error: 'Unauthorized' });
+    res.status(401).json({ error: "Unauthorized" });
   }
 };
-
-
