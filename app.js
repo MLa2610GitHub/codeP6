@@ -1,3 +1,4 @@
+//Importation du package dotenv pour gérer les variables d'environnement
 const dotenv = require("dotenv").config("./.env");
 console.log(dotenv);
 
@@ -21,15 +22,17 @@ const morgan = require("morgan");
 //Création d'une application Express
 const app = express();
 
-// Prévention des erreurs de CORS (Cross Origin Resource Sharing)
-// Ajout de headers HTTP à l'objet response pour pouvoir accéder à l'API depuis n'importe quelle origine
-// Cela permet aussi d'envoyer des requêtes avec les méthodes POST, PUT, DELETE, PATCH, OPTIONS
+//La fonction app.use est exécutée chaque fois que l’application reçoit une demande
+//app.use permet d'envoyer des requêtes avec diverses méthodes HTTP (get, post, put...)
 app.use((req, res, next) => {
+  // Ajout de headers HTTP à l'objet response pour pouvoir accéder à l'API depuis n'importe quelle origine
   res.setHeader("Access-Control-Allow-Origin", "*");
+  // Prévention des erreurs de CORS (Cross Origin Resource Sharing)
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
   );
+  //Permet d'envoyer des requêtes avec les méthodes POST, PUT, DELETE, PATCH, OPTIONS
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
@@ -61,3 +64,4 @@ mongoose
   .catch((err) => console.log("Connexion à MongoDB échouée !", err));
 
 module.exports = app;
+
