@@ -63,5 +63,5 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch((err) => console.log("Connexion à MongoDB échouée !", err));
 
+//Exportation de l'application pour qu'on puisse y accéder depuis les autres fichiers du projet
 module.exports = app;
-
