@@ -8,6 +8,9 @@ const express = require("express");
 //Importation de mongoose
 const mongoose = require("mongoose");
 
+//Importation du package helmet pour sécuriser les en-têtes HTTP
+const helmet = require('helmet');
+
 //pour accéder au path du serveur
 const path = require("path");
 
@@ -22,6 +25,10 @@ const morgan = require("morgan");
 //Création d'une application Express
 const app = express();
 
+//Implémentation du module helmet.js
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+
+//Gestion des CORS
 //La fonction app.use est exécutée chaque fois que l’application reçoit une demande
 //app.use permet d'envoyer des requêtes avec diverses méthodes HTTP (get, post, put...)
 app.use((req, res, next) => {
@@ -37,7 +44,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
-  next();
+   next();
 });
 
 //Middleware qui donne accès au corps des requêtes
